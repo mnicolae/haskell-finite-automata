@@ -4,7 +4,7 @@ Notes:
 - You may import Data.List; you may not import any other modules
 
 ***Write the names and CDF accounts for each of your group members below.***
-<Name>, <CDF>
+Mihai Nicolae, g1mihai
 <Name>, <CDF>
 -}
 module Dfa (State, Symbol, Transition, Automaton(..),
