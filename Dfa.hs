@@ -4,8 +4,8 @@ Notes:
 - You may import Data.List; you may not import any other modules
 
 ***Write the names and CDF accounts for each of your group members below.***
-<Name>, <CDF>
-<Name>, <CDF>
+David Eysman, c3eysman
+Mihai Nicolae, g1mihai
 -}
 module Dfa (State, Symbol, Transition, Automaton(..),
             allStrings, tableToDelta, extend, possibleOutcomes,
@@ -42,17 +42,33 @@ symbol (_, b, _) = b
 end :: Transition -> State
 end (_,_,c) = c
 
+filterStart :: [Transition] -> State -> [Transition]
+filterStart ts st =
+	filter (\x -> if start x == st then True else False) ts 
+
+filterSymbol :: [Transition] -> Symbol -> [Transition]
+filterSymbol ts sym =
+	filter (\x -> if symbol x == sym then True else False) ts 
+
+filterEnd :: [Transition] -> State -> [Transition]
+filterEnd ts st =
+	filter (\x -> if end x == st then True else False) ts 
+
+getEndStates :: [Transition] -> [State]
+getEndStates ts =
+	map (\x -> end x) ts
+
 -- Questions 1-4: transitions
 tableToDelta :: [Transition] -> State -> Symbol -> [State]
 tableToDelta ts = \x y ->
-        let     starts = filter (\z -> if start z == x then True else False) ts
-                ends = filter (\w -> if symbol w == y then True else False) starts
-                states = map (\q -> end q) ends
+        let filteredStarts = filterStart ts x
+            filteredSymbols = filterSymbol filteredStarts y
+            states = getEndStates filteredSymbols 
         in nub (sort states)
 
 extend :: (State -> Symbol -> [State]) -> (State -> String -> [State])
 extend tf = \x y ->
-        foldl' (next) [x] y
+	foldl' (\acc x -> tf (head acc) x) [x] y -- FIXME: currently only handling accumulators of size 1!
 
 allStrings :: [Symbol] -> [[String]]
 allStrings = undefined
