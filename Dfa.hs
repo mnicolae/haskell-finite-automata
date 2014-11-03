@@ -4,13 +4,14 @@ Notes:
 - You may import Data.List; you may not import any other modules
 
 ***Write the names and CDF accounts for each of your group members below.***
-Mihai Nicolae, g1mihai
+<Name>, <CDF>
 <Name>, <CDF>
 -}
 module Dfa (State, Symbol, Transition, Automaton(..),
             allStrings, tableToDelta, extend, possibleOutcomes,
-            accept, language, 
-            removeUseless, isFiniteLanguage, language') where
+            accept, language,
+            removeUseless, isFiniteLanguage, language',
+            epsilonClosure) where
 
 import Data.List
 
@@ -59,7 +60,7 @@ language = undefined
 
 -- Questions 7-9: finiteness
 removeUseless :: Automaton -> Automaton
-removeUseless = removeUseless
+removeUseless = undefined
 
 isFiniteLanguage :: Automaton -> Bool
 isFiniteLanguage = undefined
@@ -69,5 +70,5 @@ language' = undefined
 
 
 -- Question 10: epsilon transitions
-epsilonClosure :: Automaton -> [State] -> [State]`
+epsilonClosure :: Automaton -> [State] -> [State]
 epsilonClosure = undefined
