@@ -35,13 +35,24 @@ initial (Automaton _ _ _ i _) = i
 final :: Automaton -> [State]
 final (Automaton _ _ _ _ f) = f
 
+start :: Transition -> State
+start (a,_,_) = a
+symbol :: Transition -> Symbol
+symbol (_, b, _) = b
+end :: Transition -> State
+end (_,_,c) = c
 
 -- Questions 1-4: transitions
 tableToDelta :: [Transition] -> State -> Symbol -> [State]
-tableToDelta = undefined
+tableToDelta ts = \x y ->
+        let     starts = filter (\z -> if start z == x then True else False) ts
+                ends = filter (\w -> if symbol w == y then True else False) starts
+                states = map (\q -> end q) ends
+        in nub (sort states)
 
 extend :: (State -> Symbol -> [State]) -> (State -> String -> [State])
-extend = undefined
+extend tf = \x y ->
+        foldl' (next) [x] y
 
 allStrings :: [Symbol] -> [[String]]
 allStrings = undefined
