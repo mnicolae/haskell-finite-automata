@@ -80,7 +80,10 @@ combos chars n = concatMap (\front -> map (front ++) (combos chars 1)) (combos c
 
 
 possibleOutcomes :: Automaton -> State -> [[(String, [State])]]
-possibleOutcomes = undefined
+possibleOutcomes aut q = 
+	let strings = allStrings (alphabet aut)
+	    etf = extend (tableToDelta (transitions aut)) q  
+	in map (\x -> (x, (map etf x)))  strings
 
 
 -- Questions 5-6: acceptance
