@@ -88,7 +88,11 @@ possibleOutcomes aut q =
 
 -- Questions 5-6: acceptance
 accept :: Automaton -> String -> Bool
-accept = undefined
+accept :: Automaton -> String -> Bool
+accept aut str = let states = extend (tableToDelta (transitions aut)) 0 str
+				 in (if null (intersect states (final aut))
+						then False
+						else True)
 
 language :: Automaton -> [String]
 language = undefined
