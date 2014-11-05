@@ -78,7 +78,6 @@ combos :: [Char] -> Int -> [String]
 combos chars 1 = map (:[]) chars
 combos chars n = concatMap (\front -> map (front ++) (combos chars 1)) (combos chars (n - 1))
 
-
 possibleOutcomes :: Automaton -> State -> [[(String, [State])]]
 possibleOutcomes aut q = 
 	let strings = allStrings (alphabet aut)
