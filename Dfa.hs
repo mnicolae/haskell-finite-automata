@@ -78,7 +78,13 @@ extend tf = \x y ->
 -- [2]
 
 allStrings :: [Symbol] -> [[String]]
-allStrings = undefined
+allStrings str = 
+	[[""]] ++ map (\x -> combos str x) [1..]
+
+combos :: [Char] -> Int -> [String]
+combos chars 1 = map (:[]) chars
+combos chars n = concatMap (\front -> map (front ++) (combos chars 1)) (combos chars (n - 1))
+
 
 possibleOutcomes :: Automaton -> State -> [[(String, [State])]]
 possibleOutcomes = undefined
