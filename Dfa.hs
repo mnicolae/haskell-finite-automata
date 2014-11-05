@@ -67,15 +67,8 @@ tableToDelta ts = \x y ->
         in nub (sort states)
 
 extend :: (State -> Symbol -> [State]) -> (State -> String -> [State])
-extend tf = \x y ->
-	foldl' (\acc sym -> tf (head acc) sym) [x] y -- FIXME: currently only handling accumulators of size 1!
-
--- ghci debugging stuff to be used to understand how to fix extend to handle accumulators of any size
--- let tf = tableToDelta[(1, 'f', 2)]
--- map (\x -> tf x 'f') [1,2]
--- [[2],[]]
--- foldl' (++) [] (map (\x -> tf x 'f') [1,2])
--- [2]
+extend tf = \states string ->
+	foldl' (\acc sym -> foldl' (++) [] (map (\x -> tf x sym) acc)) [states] string
 
 allStrings :: [Symbol] -> [[String]]
 allStrings str = 
