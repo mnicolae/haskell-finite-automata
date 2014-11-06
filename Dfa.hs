@@ -35,16 +35,21 @@ initial (Automaton _ _ _ i _) = i
 final :: Automaton -> [State]
 final (Automaton _ _ _ _ f) = f
 
+-- Return the starting state for the given transition.
 start :: Transition -> State
 start (a,_,_) = a
+
+-- Return the transition symbol for the given transition.
 symbol :: Transition -> Symbol
 symbol (_, b, _) = b
+
+-- Return the ending state for the given transition.
 end :: Transition -> State
 end (_,_,c) = c
 
 filterStart :: [Transition] -> State -> [Transition]
 filterStart ts st =
-	filter (\x -> if start x == st then True else False) ts 
+	filter (\t -> if start t == st then True else False) ts 
 
 filterSymbol :: [Transition] -> Symbol -> [Transition]
 filterSymbol ts sym =
@@ -52,19 +57,27 @@ filterSymbol ts sym =
 
 filterEnd :: [Transition] -> State -> [Transition]
 filterEnd ts st =
-	filter (\x -> if end x == st then True else False) ts 
+	filter (\t -> if end t == st then True else False) ts 
 
+-- Return the ending states for a set of given transitions.
+-- Duplicates are not removed.
 getEndStates :: [Transition] -> [State]
 getEndStates ts =
 	map (\x -> end x) ts
+
+-- Return a list of all strings of length n that can be made
+-- from the symbols in the input alphabet.
+combos :: [Char] -> Int -> [String]
+combos chars 1 = map (:[]) chars
+combos chars n = concatMap (\front -> map (front ++) (combos chars 1)) (combos chars (n - 1))
 
 -- Questions 1-4: transitions
 tableToDelta :: [Transition] -> State -> Symbol -> [State]
 tableToDelta ts = \x y ->
         let filteredStarts = filterStart ts x
             filteredSymbols = filterSymbol filteredStarts y
-            states = getEndStates filteredSymbols 
-        in nub (sort states)
+            endStates = getEndStates filteredSymbols 
+        in nub (sort endStates)
 
 extend :: (State -> Symbol -> [State]) -> (State -> String -> [State])
 extend tf = \states string ->
@@ -74,10 +87,6 @@ allStrings :: [Symbol] -> [[String]]
 allStrings str = 
 	[[""]] ++ map (\x -> combos str x) [1..]
 
-combos :: [Char] -> Int -> [String]
-combos chars 1 = map (:[]) chars
-combos chars n = concatMap (\front -> map (front ++) (combos chars 1)) (combos chars (n - 1))
-
 possibleOutcomes :: Automaton -> State -> [[(String, [State])]]
 possibleOutcomes aut q = 
 	let strings = allStrings (alphabet aut)
@@ -85,14 +94,13 @@ possibleOutcomes aut q =
 	in map (\x -> (((map (\y -> (y, etf y)) x)))) strings
 
 
-
 -- Questions 5-6: acceptance
 accept :: Automaton -> String -> Bool
-accept :: Automaton -> String -> Bool
-accept aut str = let states = extend (tableToDelta (transitions aut)) 0 str
-				 in (if null (intersect states (final aut))
-						then False
-						else True)
+accept aut str =
+	let states = extend (tableToDelta (transitions aut)) 0 str
+	in (if null (intersect states (final aut))
+		then False
+		else True)
 
 language :: Automaton -> [String]
 language = undefined

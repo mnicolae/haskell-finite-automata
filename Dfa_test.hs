@@ -13,10 +13,17 @@ tableToDeltaTests = TestList [
     ]
 
 extendTests = TestList [
-    [2] ~=? extend (tableToDelta [(1, 'f', 2), (2, 'f', 2)]) 1 "ff"
+    [2] ~=? extend (tableToDelta [(1, 'f', 2), (2, 'f', 2)]) 1 "ff",
+
+    [2,3] ~=? extend (tableToDelta [(1, 'f', 2),
+					(1, 'f', 3),
+					(2, 'f', 2),
+					(3, 'f', 3)]) 1 "ff"
     ]
 
 allStringsTests = TestList [
+    [""] ~=? allStrings "ab" !! 0,
+    ["a", "b"] ~=? allStrings "ab" !! 1,
     ["aa", "ab", "ba", "bb"] ~=? allStrings "ab" !! 2
     ]
 
