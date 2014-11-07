@@ -30,25 +30,30 @@ initial (Automaton _ _ _ i _) = i
 final :: Automaton -> [State]
 final (Automaton _ _ _ _ f) = f
 
+-- Return the starting state for the given transition.
 start :: Transition -> State
 start (a,_,_) = a
+-- Return the transition symbol for the given transition.
 symbol :: Transition -> Symbol
 symbol (_, b, _) = b
+-- Return the ending state for the given transition.
 end :: Transition -> State
 end (_,_,c) = c
 
 filterStart :: [Transition] -> State -> [Transition]
 filterStart ts st =
-	filter (\x -> if start x == st then True else False) ts 
+	filter (\t -> if start t == st then True else False) ts 
 
 filterSymbol :: [Transition] -> Symbol -> [Transition]
 filterSymbol ts sym =
-	filter (\x -> if symbol x == sym then True else False) ts 
+	filter (\t -> if symbol t == sym then True else False) ts 
 
 filterEnd :: [Transition] -> State -> [Transition]
 filterEnd ts st =
-	filter (\x -> if end x == st then True else False) ts 
+	filter (\t -> if end t == st then True else False) ts 
 
+-- Return the ending states for a set of given transitions. 	
+-- Duplicates are not removed.
 getEndStates :: [Transition] -> [State]
 getEndStates ts =
 	map (\x -> end x) ts
@@ -56,6 +61,8 @@ getEndStates ts =
 tupleString :: (String, [State]) -> String
 tupleString (a,_) = a
 
+-- Return a list of all strings of length n that can be made
+-- from the symbols in the input alphabet.
 combos :: [Char] -> Int -> [String]
 combos chars 1 = map (:[]) chars
 combos chars n = concatMap (\front -> map (front ++) (combos chars 1)) (combos chars (n - 1))
