@@ -71,6 +71,9 @@ combos :: [Char] -> Int -> [String]
 combos chars 1 = map (:[]) chars
 combos chars n = concatMap (\front -> map (front ++) (combos chars 1)) (combos chars (n - 1))
 
+tupleString :: (String, [State]) -> String
+tupleString (a,_) = a
+
 -- Questions 1-4: transitions
 tableToDelta :: [Transition] -> State -> Symbol -> [State]
 tableToDelta ts = \x y ->
@@ -97,13 +100,15 @@ possibleOutcomes aut q =
 -- Questions 5-6: acceptance
 accept :: Automaton -> String -> Bool
 accept aut str =
-	let states = extend (tableToDelta (transitions aut)) 0 str
+	let states = extend (tableToDelta (transitions aut)) (initial aut) str
 	in (if null (intersect states (final aut))
 		then False
 		else True)
 
 language :: Automaton -> [String]
-language = undefined
+language aut = let states = possibleOutcomes aut (initial aut)
+                   strings = map (\l -> foldl' (\acc t -> acc ++ (tupleString t)) [] l) states
+               in filter (accept aut) strings
 
 
 -- Questions 7-9: finiteness
