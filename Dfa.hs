@@ -112,9 +112,7 @@ accept aut str = let states = extend (tableToDelta (transitions aut)) (initial a
 						else True)
 
 language :: Automaton -> [String]
-language aut = let states = possibleOutcomes aut (initial aut)
-                   strings = map (\l -> foldl' (\acc t -> acc ++ (tupleString t)) [] l) states
-               in filter (accept aut) strings
+language aut = filter (accept aut) (concat (allStrings (alphabet aut)))
 
 -- Questions 7-9: finiteness
 removeUseless :: Automaton -> Automaton
