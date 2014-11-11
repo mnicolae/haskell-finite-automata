@@ -58,6 +58,10 @@ getEndStates :: [Transition] -> [State]
 getEndStates ts =
 	map (\x -> end x) ts
 
+-- Return the Epsilon transitions for a given set of transitions
+getEpsTransitions :: [Transition] -> [Transition]
+getEpsTransitions ts = filter (\t if symbol t == ' ' then True else False) ts
+
 tupleString :: (String, [State]) -> String
 tupleString (a,_) = a
 
