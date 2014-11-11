@@ -121,7 +121,11 @@ removeUseless aut = let strings = foldl' (++) [] (take (length (states aut)) (al
 		    in removeTrans (changeState aut useful) useful
 
 isFiniteLanguage :: Automaton -> Bool
-isFiniteLanguage = undefined
+isFiniteLanguage aut =
+				let useful = (removeUseless aut)
+				    nplus = (length (states useful)) + 1
+				    strings = (allStrings (alphabet aut)) !! nplus
+				in not(elem True (map (accept useful) strings))
 
 language' :: Automaton -> [String]
 language' = undefined
