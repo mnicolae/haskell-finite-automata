@@ -47,6 +47,7 @@ acceptTests = TestList [
 f = Automaton [0,1] ['a'] [(0,'a',1)] 0 [1]
 f2 = Automaton [0,1,2] ['a','b'] [(0,'a',2), (0,'a',1), (1,'a',2)] 0 [2]
 f3 = Automaton [0,1] ['a'] [(0,'a',0)] 0 [0]
+f4 = Automaton [0,1,2] ['a'] [(0,'a',1)] 0 [2]
 languageTests = TestList [
     ["","aa"] ~=? take 2 (language a1),
     ["a"] ~=? take 1 (language f),
@@ -73,14 +74,16 @@ removeUselessTests = let a3 = removeUseless a2
 isFiniteLanguageTests = TestList [
     True ~=? isFiniteLanguage a2,
     True ~=? isFiniteLanguage f2,
-    False ~=? isFiniteLanguage f3
+    False ~=? isFiniteLanguage f3,
+    True ~=? isFiniteLanguage f4
     ]
 
 
 language'Tests = TestList [
     [""] ~=? language' a2,
     ["a"] ~=? language' f,
-    [""] ~=? take 1 (language' f3)
+    [""] ~=? take 1 (language' f3),
+    [] ~=? language' f4
     ]
 
 a3 = Automaton [0,1,2] ['a','b'] [(0,' ',2),(0,'a',1),(2,'b',0)] 0 [1]
