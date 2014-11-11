@@ -40,14 +40,17 @@ symbol (_, b, _) = b
 end :: Transition -> State
 end (_,_,c) = c
 
+-- Filter the given transitions based on a starting state.
 filterStart :: [Transition] -> State -> [Transition]
 filterStart ts st =
 	filter (\t -> if start t == st then True else False) ts 
 
+-- Filter the given transitions based on a symbol.
 filterSymbol :: [Transition] -> Symbol -> [Transition]
 filterSymbol ts sym =
 	filter (\t -> if symbol t == sym then True else False) ts 
 
+-- Filter the given transitions based on an end state.
 filterEnd :: [Transition] -> State -> [Transition]
 filterEnd ts st =
 	filter (\t -> if end t == st then True else False) ts 
@@ -58,18 +61,18 @@ getEndStates :: [Transition] -> [State]
 getEndStates ts =
 	map (\x -> end x) ts
 
--- Return the Epsilon transitions for a given set of transitions
-getEpsTransitions :: [Transition] -> [Transition]
-getEpsTransitions ts = filter (\t -> symbol t == ' ') ts
+-- Return the epsilon transitions for a given set of transitions.
+epsTrans :: [Transition] -> [Transition]
+epsTrans ts = filter (\t -> symbol t == ' ') ts
 
--- Return the Epsilon transitions for a given set of transitions that start with a given state
-getEpsTransitionsGivenState :: [Transition] -> State -> [Transition]
-getEpsTransitionsGivenState ts st = filter (\t -> (start t) == st) (getEpsTransitions ts)
+-- Return the epsilon transitions for a given set of transitions that start with a given state.
+epsTransFromState :: [Transition] -> State -> [Transition]
+epsTransFromState ts st = filter (\t -> (start t) == st) (epsTrans ts)
 
--- Return end states for the Epsilon transitions for a given set of transitions
--- that start with a given state
-getEndStatesEpsTransitionsGivenState :: [Transition] -> State -> [State]
-getEndStatesEpsTransitionsGivenState ts st = nub (sort (map (\x -> end x) (getEpsTransitionsGivenState ts st)))
+-- Return end states for the epsilon transitions for a given set of transitions
+-- that start with a given state. Duplicates are not removed and the result is not sorted.
+endStatesEpsTransFromState :: [Transition] -> State -> [State]
+endStatesEpsTransFromState ts st = map (\x -> end x) (epsTransFromState ts st)
 
 tupleString :: (String, [State]) -> String
 tupleString (a,_) = a
@@ -152,5 +155,8 @@ language' aut = let useful = removeUseless aut
 
 -- Question 10: epsilon transitions
 epsilonClosure :: Automaton -> [State] -> [State]
-epsilonClosure aut states = let x = foldl' (\acc state -> acc ++ (getEndStatesEpsTransitionsGivenState (transitions aut) state)) states states
-			    in (nub (sort x))
+epsilonClosure aut states = 
+	let trans = (transitions aut)
+	    result = foldl' (\acc state -> acc ++ (endStatesEpsTransFromState trans state)) states states
+	in (nub (sort result))
+
