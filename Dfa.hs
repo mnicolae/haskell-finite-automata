@@ -62,6 +62,15 @@ getEndStates ts =
 getEpsTransitions :: [Transition] -> [Transition]
 getEpsTransitions ts = filter (\t -> symbol t == ' ') ts
 
+-- Return the Epsilon transitions for a given set of transitions that start with a given state
+getEpsTransitionsGivenState :: [Transition] -> State -> [Transition]
+getEpsTransitionsGivenState ts st = filter (\t -> (start t) == st) (getEpsTransitions ts)
+
+-- Return end states for the Epsilon transitions for a given set of transitions
+-- that start with a given state
+getEndStatesEpsTransitionsGivenState :: [Transition] -> State -> [State]
+getEndStatesEpsTransitionsGivenState ts st = nub (sort (map (\x -> end x) (getEpsTransitionsGivenState ts st)))
+
 tupleString :: (String, [State]) -> String
 tupleString (a,_) = a
 
@@ -143,4 +152,5 @@ language' aut = let useful = removeUseless aut
 
 -- Question 10: epsilon transitions
 epsilonClosure :: Automaton -> [State] -> [State]
-epsilonClosure = undefined
+epsilonClosure aut states = let x = foldl' (\acc state -> acc ++ (getEndStatesEpsTransitionsGivenState (transitions aut) state)) states states
+			    in (nub (sort x))
