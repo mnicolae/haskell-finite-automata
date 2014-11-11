@@ -58,6 +58,10 @@ getEndStates :: [Transition] -> [State]
 getEndStates ts =
 	map (\x -> end x) ts
 
+-- Return the Epsilon transitions for a given set of transitions
+getEpsTransitions :: [Transition] -> [Transition]
+getEpsTransitions ts = filter (\t -> symbol t == ' ') ts
+
 tupleString :: (String, [State]) -> String
 tupleString (a,_) = a
 
@@ -121,10 +125,20 @@ removeUseless aut = let strings = foldl' (++) [] (take (length (states aut)) (al
 		    in removeTrans (changeState aut useful) useful
 
 isFiniteLanguage :: Automaton -> Bool
-isFiniteLanguage = undefined
+isFiniteLanguage aut =
+				let useful = (removeUseless aut)
+				    nplus = (length (states useful)) + 1
+				    strings = (allStrings (alphabet aut)) !! nplus
+				in not(elem True (map (accept useful) strings))
 
 language' :: Automaton -> [String]
-language' = undefined
+language' aut = let useful = removeUseless aut 
+		    n = length (states useful) + 2
+		in if isFiniteLanguage aut
+		   then let states = take n (possibleOutcomes useful (initial useful))
+			    strings = map (\l -> foldl' (\acc t -> acc ++ (tupleString t)) [] l) states
+		         in filter (accept useful) strings
+		   else language aut
 
 
 -- Question 10: epsilon transitions
