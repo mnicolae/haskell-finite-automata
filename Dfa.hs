@@ -128,7 +128,13 @@ isFiniteLanguage aut =
 				in not(elem True (map (accept useful) strings))
 
 language' :: Automaton -> [String]
-language' = undefined
+language' aut = let useful = removeUseless aut 
+		    n = length (states useful) + 2
+		in if isFiniteLanguage aut
+		   then let states = take n (possibleOutcomes useful (initial useful))
+			    strings = map (\l -> foldl' (\acc t -> acc ++ (tupleString t)) [] l) states
+		         in filter (accept useful) strings
+		   else language aut
 
 
 -- Question 10: epsilon transitions
