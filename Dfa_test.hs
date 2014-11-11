@@ -76,12 +76,21 @@ language'Tests = TestList [
 
 a3 = Automaton [0,1,2] ['a','b'] [(0,' ',2),(0,'a',1),(2,'b',0)] 0 [1]
 
-a4 = Automaton [0,1,2,3,4,5] ['a','b'] [(0, ' ', 1), (0, ' ', 4), (1, 'a', 2), (2, ' ', 3), (2, 'a', 3), (4, 'b', 1)] 0 [3,5]
+a4 = Automaton [0,1,2,3,4,5] ['a','b'] [(0, ' ', 1),
+					(0, ' ', 4),
+					(1, 'a', 2),
+					(2, ' ', 3),
+					(2, 'a', 3),
+					(4, 'b', 1),
+					(5, ' ', 5)] 
+					0 [3,5]
 
 epsilonClosureTests = TestList [
     [0,2] ~=? epsilonClosure a3 [0],
 
     [1] ~=? epsilonClosure a4 [1],
+
+    [5] ~=? epsilonClosure a4 [5],
 
     [0,1,4] ~=? epsilonClosure a4 [0],
 
