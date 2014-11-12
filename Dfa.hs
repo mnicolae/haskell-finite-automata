@@ -33,9 +33,11 @@ final (Automaton _ _ _ _ f) = f
 -- Return the starting state for the given transition.
 start :: Transition -> State
 start (a,_,_) = a
+
 -- Return the transition symbol for the given transition.
 symbol :: Transition -> Symbol
 symbol (_, b, _) = b
+
 -- Return the ending state for the given transition.
 end :: Transition -> State
 end (_,_,c) = c
@@ -56,21 +58,17 @@ filterEnd ts st =
 	filter (\t -> if end t == st then True else False) ts 
 
 -- Return the ending states for a set of given transitions. 	
--- Duplicates are not removed.
 getEndStates :: [Transition] -> [State]
 getEndStates ts =
 	map (\x -> end x) ts
 
--- Return the epsilon transitions for a given set of transitions.
-epsTrans :: [Transition] -> [Transition]
-epsTrans ts = filter (\t -> symbol t == ' ') ts
-
--- Return the epsilon transitions for a given set of transitions that start with a given state.
+-- For a given set of transitions and a given state
+-- return the corresponding epsilon transitions.
 epsTransFromState :: [Transition] -> State -> [Transition]
-epsTransFromState ts st = filter (\t -> (start t) == st) (epsTrans ts)
+epsTransFromState ts st = filter (\t -> (start t) == st && (symbol t) == ' ') (epsTrans ts)
 
--- Return end states for the epsilon transitions for a given set of transitions
--- that start with a given state. Duplicates are not removed and the result is not sorted.
+-- For a given set of transitions and a given state
+-- return the end states of the corresponding epsilon transitions.
 endStatesEpsTransFromState :: [Transition] -> State -> [State]
 endStatesEpsTransFromState ts st = map (\x -> end x) (epsTransFromState ts st)
 
@@ -90,10 +88,11 @@ changeInitial :: Automaton -> State -> Automaton
 changeInitial (Automaton a b c _ e) state = Automaton a b c state e
 
 removeTrans :: Automaton -> [State] -> Automaton
-removeTrans aut states = let ts = transitions aut
-			     someUsefullTrans = filter (\t -> (elem (end t) states)) ts
-			     usefullTrans = filter (\t -> (elem (start t) states)) someUsefullTrans
-			 in changeTrans aut usefullTrans
+removeTrans aut states =
+	let ts = transitions aut
+            someUsefullTrans = filter (\t -> (elem (end t) states)) ts
+            usefullTrans = filter (\t -> (elem (start t) states)) someUsefullTrans
+        in changeTrans aut usefullTrans
 
 changeTrans :: Automaton -> [Transition] -> Automaton
 changeTrans (Automaton a b _ d e) ts = (Automaton a b ts d e)
@@ -122,26 +121,28 @@ possibleOutcomes aut q =
 
 -- Questions 5-6: acceptance
 accept :: Automaton -> String -> Bool
-accept aut str = let states = extend (tableToDelta (transitions aut)) (initial aut) str
-				 in (if null (intersect states (final aut))
-						then False
-						else True)
+accept aut str =
+	let states = extend (tableToDelta (transitions aut)) (initial aut) str
+	in (if null (intersect states (final aut))
+		then False
+		else True)
 
 language :: Automaton -> [String]
 language aut = filter (accept aut) (concat (allStrings (alphabet aut)))
 
 -- Questions 7-9: finiteness
 removeUseless :: Automaton -> Automaton
-removeUseless aut = let strings = foldl' (++) [] (take (length (states aut)) (allStrings (alphabet aut)))
-		    	useful = filter (\st -> elem True (map (accept (changeInitial aut st)) strings)) (states aut)
-		    in removeTrans (changeState aut useful) useful
+removeUseless aut =
+	let strings = foldl' (++) [] (take (length (states aut)) (allStrings (alphabet aut)))
+	    useful = filter (\st -> elem True (map (accept (changeInitial aut st)) strings)) (states aut)
+	in removeTrans (changeState aut useful) useful
 
 isFiniteLanguage :: Automaton -> Bool
 isFiniteLanguage aut =
-				let useful = (removeUseless aut)
-				    nplus = (length (states useful)) + 1
-				    strings = (allStrings (alphabet aut)) !! nplus
-				in not(elem True (map (accept useful) strings))
+	let useful = (removeUseless aut)
+	    nplus = (length (states useful)) + 1
+	    strings = (allStrings (alphabet aut)) !! nplus
+	in not (elem True (map (accept useful) strings))
 
 language' :: Automaton -> [String]
 language' aut = let useful = removeUseless aut 

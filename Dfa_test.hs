@@ -42,12 +42,18 @@ possibleOutcomesTests = TestList [
 a1 = Automaton [0,1] ['a'] [(0,'a',1),(1,'a',0)] 0 [0]
 
 acceptTests = TestList [
-    True ~=? accept a1 "aa"
+    True ~=? accept a1 "",
+    False ~=? accept a1 "a",
+    False ~=? accept a1 "b",
+    True ~=? accept a1 "aa",
+    True ~=? accept a1 "aaaa"
     ]
+
 f = Automaton [0,1] ['a'] [(0,'a',1)] 0 [1]
 f2 = Automaton [0,1,2] ['a','b'] [(0,'a',2), (0,'a',1), (1,'a',2)] 0 [2]
 f3 = Automaton [0,1] ['a'] [(0,'a',0)] 0 [0]
 f4 = Automaton [0,1,2] ['a'] [(0,'a',1)] 0 [2]
+
 languageTests = TestList [
     ["","aa"] ~=? take 2 (language a1),
     ["a"] ~=? take 1 (language f),
@@ -56,6 +62,12 @@ languageTests = TestList [
     ]
 
 a2 = Automaton [0,1] ['a'] [(0,'a',1)] 0 [0]
+
+a5 = Automaton [0,1,2,3] ['a','b'] [(0, 'a', 1),
+				    (0, 'b', 3),
+				    (1, 'b', 2),
+				    (1, 'a', 3),
+				    (2, 'a', 2)] 0 [3]
 
 eq :: Automaton -> Automaton -> Bool
 eq (Automaton s1 a1 ts1 i1 f1) (Automaton s2 a2 ts2 i2 f2) =
@@ -66,9 +78,13 @@ eq (Automaton s1 a1 ts1 i1 f1) (Automaton s2 a2 ts2 i2 f2) =
     f1 == f2
 
 removeUselessTests = let a3 = removeUseless a2
+			 a6 = removeUseless a5
     in
     TestList [
-        True ~=? eq a3 (Automaton [0] ['a'] [] 0 [0])
+        True ~=? eq a3 (Automaton [0] ['a'] [] 0 [0]),
+	True ~=? eq a6 (Automaton [0,1,3] ['a', 'b'] [(0, 'a', 1),
+							(0, 'b', 3),
+				     			(1, 'a', 3)] 0 [3])
         ]
 
 isFiniteLanguageTests = TestList [
@@ -78,7 +94,6 @@ isFiniteLanguageTests = TestList [
     True ~=? isFiniteLanguage f4
     ]
 
-
 language'Tests = TestList [
     [""] ~=? language' a2,
     ["a"] ~=? language' f,
@@ -86,27 +101,20 @@ language'Tests = TestList [
     [] ~=? language' f4
     ]
 
-a3 = Automaton [0,1,2] ['a','b'] [(0,' ',2),(0,'a',1),(2,'b',0)] 0 [1]
-
-a4 = Automaton [0,1,2,3,4,5] ['a','b'] [(0, ' ', 1),
+a3 = Automaton [0,1,2,3,4,5] ['a','b'] [(0, ' ', 1),
 					(0, ' ', 4),
 					(1, 'a', 2),
 					(2, ' ', 3),
 					(2, 'a', 3),
 					(4, 'b', 1),
-					(5, ' ', 5)] 
-					0 [3,5]
+					(5, ' ', 5)] 0 [3,5]
 
 epsilonClosureTests = TestList [
-    [0,2] ~=? epsilonClosure a3 [0],
-
-    [1] ~=? epsilonClosure a4 [1],
-
-    [5] ~=? epsilonClosure a4 [5],
-
-    [0,1,4] ~=? epsilonClosure a4 [0],
-
-    [2,3,4] ~=? epsilonClosure a4 [2,4]
+    [] ~=? epsilonClosure a3 [],
+    [1] ~=? epsilonClosure a3 [1],
+    [5] ~=? epsilonClosure a3 [5],
+    [0,1,4] ~=? epsilonClosure a3 [0],
+    [2,3,4] ~=? epsilonClosure a3 [2,4]
     ]
 
 main :: IO ()
