@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)http://www.cs.toronto.edu/~liudavid/csc324/assignments/a2/dfa.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>CSC324 Fall 2014</title>
+  <link rel="icon" type="image/x-icon" href="http://www.cs.toronto.edu/~liudavid/csc324/images/favicon.ico">
+  <link rel="stylesheet" href="http://www.cs.toronto.edu/~liudavid/csc324/styles/main.css">
+  <script src="./jquery-1.11.1.js"></script>
+  <script src="./misc.js"></script>
+      <style type="text/css">
+    table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+      margin: 0; padding: 0; vertical-align: baseline; border: none; }
+    table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+    td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+    td.sourceCode { padding-left: 5px; }
+    pre, code { color: #cccccc; background-color: #303030; }
+    code > span.kw { color: #f0dfaf; }
+    code > span.dt { color: #dfdfbf; }
+    code > span.dv { color: #dcdccc; }
+    code > span.bn { color: #dca3a3; }
+    code > span.fl { color: #c0bed1; }
+    code > span.ch { color: #dca3a3; }
+    code > span.st { color: #cc9393; }
+    code > span.co { color: #7f9f7f; }
+    code > span.ot { color: #efef8f; }
+    code > span.al { color: #ffcfaf; }
+    code > span.fu { color: #efef8f; }
+    code > span.er { color: #c3bf9f; }
+    </style>
+    <style id="style-1-cropbar-clipper">/* Copyright 2014 Evernote Corporation. All rights reserved. */
+.en-markup-crop-options {
+    top: 18px !important;
+    left: 50% !important;
+    margin-left: -100px !important;
+    width: 200px !important;
+    border: 2px rgba(255,255,255,.38) solid !important;
+    border-radius: 4px !important;
+}
+
+.en-markup-crop-options div div:first-of-type {
+    margin-left: 0px !important;
+}
+</style></head>
+<body>
+  <div id="nav-background"></div>
+  <div class="center">
+    <div id="line_left_long"></div>
+    <div id="line_right_long"></div>
+    <nav>
+      <ul>
+        <li><a href="http://www.cs.toronto.edu/~liudavid/csc324/index.html">CSC324</a></li>
+        <li><a href="http://www.cs.toronto.edu/~liudavid/csc324/learn.html" class="here">Learn</a></li>
+        <li><a href="https://piazza.com/utoronto.ca/fall2014/csc324/home">Discuss</a></li>
+        <li><a href="https://markus.cdf.toronto.edu/csc324-2014-09/">Submit</a></li>
+        <li><a href="http://www.cs.toronto.edu/~liudavid/csc324/feedback.html">Anonymous Feedback</a></li>
+        <li><a id="more">More</a>
+          <div id="more-wrap">
+            <ul id="more-dropdown">
+              <li><a href="http://www.cs.toronto.edu/~liudavid/csc324/calendar.html">Calendar</a></li>
+              <li><a href="http://www.cs.toronto.edu/~liudavid/csc324/res/info.pdf" target="blank_">Info Sheet</a></li>
+              <li><a href="http://www.cs.toronto.edu/~liudavid/csc324/integrity.html">Academic Integrity</a></li>
+              <li><a href="http://www.cs.toronto.edu/~liudavid/csc324/homework_faq.html">Homework FAQ</a></li>
+              <li><a href="http://www.cs.toronto.edu/~liudavid/csc324/lab_policies.html">Lab Policies</a></li>
+              <li><a href="http://www.cs.toronto.edu/~liudavid/csc324/exams.html">Exam Info</a></li>
+              <li><a href="https://login.library.utoronto.ca/cgi-bin/go_log.pl?url=http://exams.library.utoronto.ca">University Exam Repo</a></li>
+            </ul>
+          </div>
+        </li>
+        <span style="float: right;"><li>Fall 2014</li></span>
+      </ul>
+    </nav>
+  </div>
+  <div id="content">
+    <div class="center">
+<!-- Don't indent the body. There seems to be issues with this and code rendering. -->
+<a href="http://www.github.com/mnicolae/haskell-finite-automata">
+    <img alt="Fork me on GitHub" src="http://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png">
+  </a>
+<h1 id="assignment-2-finite-automata-due-nov-11-noon">Assignment 2: Finite Automata (due Nov 11, noon)</h1>
+<p><strong>Assignment specification, starter code, and sample tests considered complete.</strong></p>
+<p><strong><a href="http://www.cs.toronto.edu/~liudavid/csc324/assignments/a2/a2_marking_scheme.html">Marking scheme</a> posted</strong></p>
+<p>In CSC236, you learned about <strong>Deterministic and Nondeterministic Finite Automata</strong>, a simple model of computation that parse regular languages (which you might be more familiar with in the guise of regular expressions). Below is a simple example of a finite automaton (this one is deterministic).</p>
+<p><img src="./dfa.jpg" alt="DFA"></p>
+<p>A <em>deterministic</em> finite automaton consists of 5 parts:</p>
+<ul>
+<li>A set of states ({Q1, Q2, Q3, Q4, Q5})</li>
+<li>An set of symbols, called an alphabet ({0, 1})</li>
+<li>A <em>transition function</em> that determines the moves from one state to another (the arrows and their labels)</li>
+<li>An initial state (Q1)</li>
+<li>A set of final states ({Q4, Q5})</li>
+</ul>
+<p>The difference between <em>deterministic</em> and <em>nondeterministic</em> finite automata is the following: in a DFA, for every state and symbol, there must be <strong>exactly one</strong> transition leading to another state; for NFAs, there could be 0 transitions or multiple transitions for a particular state-symbol pair. In other words, in a DFA the transition function takes a state and a symbol, and outputs a <em>single</em> state that is the new state after reading in the symbol at that state; in an NFA the transition function instead outputs a <em>set of states</em>, possibly empty, specifying which possible states the NFA could be in after reading in the symbol.</p>
+<p>We say that a finite automaton <em>accepts</em> a string if, when starting at the initial state and reading in the symbols in the string, <em>at least one</em> of states the automaton could end up is a final state. Put another way, the only way an automaton will reject a string is if there is <em>no way</em> to get from the start state to a final state by reading in the symbols in the string.</p>
+<p>For example, in the automaton above, the strings 00 (ends at Q5) and 111 (ends at Q4) are accepted, but 011 (ends at Q3) is rejected.</p>
+<p>For a more in-depth refresher of finite automata, check your notes from CSC236, including pp. 68-70 and 73-74 of <a href="http://www.cs.toronto.edu/~liudavid/courses/csc236w14/resources/notes.pdf">these notes</a>.</p>
+<h2 id="finite-automata-in-haskell">Finite Automata in Haskell</h2>
+<p>Here are the provided starter files for this assignment:</p>
+<ul>
+<li><a href="http://www.cs.toronto.edu/~liudavid/csc324/assignments/a2/Dfa.hs">Dfa.hs</a></li>
+<li><a href="http://www.cs.toronto.edu/~liudavid/csc324/assignments/a2/Dfa_test.hs">Dfa_test.hs</a></li>
+</ul>
+<p>As expected, the first thing we need to do in modeling finite automata in Haskell is to define the necessary types. To keep things simple, all states will be labelled with <em>non-negative</em> integers, and all symbols will be <em>lowercase</em> characters:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">State</span> <span class="fu">=</span> <span class="dt">Int</span>
+<span class="kw">type</span> <span class="dt">Symbol</span> <span class="fu">=</span> <span class="dt">Char</span></code></pre>
+<p>Note that because <code>String</code> is a type synonym of <code>[Char]</code>, it is also a type synonym of <code>[Symbol]</code>, and so we'll use this synonym extensively throughout the assignment when we want to talk about strings of characters.</p>
+<p>A <em>transition</em> will be a triple <code>(start, x, end)</code>, where <code>start</code> and <code>end</code> are states, and <code>x</code> is a symbol. This represents a transition from <code>start</code> to <code>end</code> upon reading the symbol <code>x</code>, i.e., an "arrow" in a DFA/NFA diagram.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Transition</span> <span class="fu">=</span> (<span class="dt">State</span>, <span class="dt">Symbol</span>, <span class="dt">State</span>)</code></pre>
+<p>Finally, we'll represent sets with plain lists. Putting this together yields the following new type for finite automata; notice that we're not defining a type synonym, but a new data type with a single value constructor.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Automaton</span> <span class="fu">=</span> <span class="dt">Automaton</span> [<span class="dt">State</span>] [<span class="dt">Symbol</span>] [<span class="dt">Transition</span>] <span class="dt">State</span> [<span class="dt">State</span>]
+<span class="co">-- Usage:</span>
+<span class="co">-- a = Automaton states alphabet transitions initial final</span></code></pre>
+<p>You can assume that we'll always give you well-formed <code>Automaton</code> values, so you don't need to worry about error-checking. In particular, you can assume that the <code>[State]</code>, <code>[Symbol]</code>, and <code>[Transition]</code> arguments will not contain duplicates, as they really represent sets, not lists. This also holds for all other functions below that take <code>[State]</code>, <code>[Symbol]</code>, or <code>[Transition]</code> arguments. Similarly, when we ask you to return a <em>set</em> of states/symbols/transitions, your results must not contain any duplicates!</p>
+<p>However, note that this type doesn't distinguish between DFAs and NFAs, so be careful when you proceed with the assignment, and you won't be able to rely on Haskell's type system to help you there.</p>
+<p>Here is a simple example of a finite automaton in Haskell. Before proceeding, try drawing it, and determining the language it accepts (i.e., which strings it accepts). Is it deterministic or non-deterministic? How can you tell based on the transition table?</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">ex <span class="fu">=</span> <span class="dt">Automaton</span> [<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>]
+               [<span class="ch">'a'</span>,<span class="ch">'b'</span>]
+               [(<span class="dv">0</span>,<span class="ch">'a'</span>,<span class="dv">1</span>),
+                (<span class="dv">0</span>,<span class="ch">'b'</span>,<span class="dv">2</span>),
+                (<span class="dv">1</span>,<span class="ch">'a'</span>,<span class="dv">1</span>),
+                (<span class="dv">1</span>,<span class="ch">'b'</span>,<span class="dv">1</span>),
+                (<span class="dv">1</span>,<span class="ch">'b'</span>,<span class="dv">2</span>)]
+               <span class="dv">0</span>
+               [<span class="dv">0</span>,<span class="dv">2</span>]</code></pre>
+<h2 id="transitions">Transitions</h2>
+<p>Let's start by computing with the transitions of our <code>Automaton</code> type.</p>
+<p><strong>Clarification: you're required to submit tests for these and all other required functions on MarkUs!</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>Write a function <code>tableToDelta :: [Transition] -&gt; State -&gt; Symbol -&gt; [State]</code>, which takes as input a set of transitions, and outputs the <strong>transition function</strong> corresponding to the transitions.</p>
+<p>Note that the transition function has type <code>State -&gt; Symbol -&gt; [State]</code>: it takes as input a <code>State</code> and <code>Symbol</code>, and outputs the set of all possible <code>State</code>s the automaton could be in after reading in the given symbol from the given state. In the deterministic case, the output set always has size 1, but in general, the output's size could be 0 or be very large.</p>
+<p>The transition function should output the states in ascending order (remember, we represent states as integers), and should not contain any duplicates!</p></li>
+<li><p>Your next task is to write a function <code>extend :: (State -&gt; Symbol -&gt; [State]) -&gt; (State -&gt; String -&gt; [State])</code> which takes a transition function and outputs the corresponding <strong>extended transition function</strong>.</p>
+<p>Recall that the extended transition function has the same purpose as the transition function, except its second argument is a string of symbols rather than just a single symbol; its output is a list of states that the automaton could be in when starting from the the input state and after reading in the symbols in the order provided in the input string. Note that for a DFA, the output list still only has size 1.</p>
+<p>Again, your extended transition function should output its set of states in ascending order, and not contain duplicates.</p></li>
+<li><p>Here's an aside that's tougher: write a function <code>allStrings :: [Symbol] -&gt; [[String]]</code>, which does the following:</p>
+<ul>
+<li>Take as input a set of symbols of size <span class="math"><em>k</em> ≥ 1</span> (no duplicates)</li>
+<li>Outputs an infinite list, where the <span class="math"><em>n</em></span>-th item in the list is a list of all <span class="math"><em>k</em><sup><em>n</em></sup></span> strings of length <span class="math"><em>n</em></span> that can be made from the symbols in the input set, <em>in alphabetical order</em></li>
+</ul>
+<p>Note that the output list is 0-indexed, so the first element should always be <code>[""]</code>.</p></li>
+<li><p>Putting things together, write a function <code>possibleOutcomes :: Automaton -&gt; State -&gt; [[(String, [State])]]</code> which does the following:</p>
+<ul>
+<li>Take as input an automaton and a state <span class="math"><em>q</em></span> in that automaton</li>
+<li><p>Output an infinite list, where the <span class="math"><em>n</em></span>-th element is:</p>
+<ul>
+<li>a list of tuples <code>(string,states) :: (String, [State])</code> where <code>string</code> has length <span class="math"><em>n</em></span>, and <code>states</code> is a list of possible states the automaton could be in when starting at state <span class="math"><em>q</em></span> and reading in the symbols in <code>string</code>. <code>states</code> must be in ascending order, and contain no duplicates.</li>
+</ul></li>
+</ul>
+<p>All possible strings of length <span class="math"><em>n</em></span> consisting of symbols in the automaton's alphabet must appear the list of tuples, and the tuples should be sorted in alphabetical order by their corresponding strings.</p>
+<p>You must make use of previous question parts to accomplish this. But if you do this correctly, you'll find that this question is quite short!</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">ex <span class="fu">=</span> <span class="dt">Automaton</span> [<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>]
+               [<span class="ch">'a'</span>,<span class="ch">'b'</span>]
+               [(<span class="dv">0</span>,<span class="ch">'a'</span>,<span class="dv">1</span>),
+                (<span class="dv">0</span>,<span class="ch">'b'</span>,<span class="dv">2</span>),
+                (<span class="dv">1</span>,<span class="ch">'a'</span>,<span class="dv">1</span>),
+                (<span class="dv">1</span>,<span class="ch">'b'</span>,<span class="dv">1</span>),
+                (<span class="dv">1</span>,<span class="ch">'b'</span>,<span class="dv">2</span>)]
+               <span class="dv">0</span>
+               [<span class="dv">0</span>,<span class="dv">2</span>]
+<span class="fu">&gt;</span> <span class="kw">let</span> out <span class="fu">=</span> possibleOutcomes ex <span class="dv">1</span>
+<span class="fu">&gt;</span> out <span class="fu">!!</span> <span class="dv">2</span>
+[(<span class="ch">'aa'</span>,[<span class="dv">1</span>]),(<span class="ch">'ab'</span>,[<span class="dv">1</span>,<span class="dv">2</span>]),(<span class="ch">'ba'</span>,[<span class="dv">1</span>]),(<span class="ch">'bb'</span>,[<span class="dv">1</span>,<span class="dv">2</span>])]</code></pre></li>
+</ol>
+<h2 id="acceptance">Acceptance</h2>
+<p>Now let's get to the interesting part: using finite automata to accept and reject languages.</p>
+<ol start="5" style="list-style-type: decimal">
+<li><p>Write a function <code>accept :: Automaton -&gt; String -&gt; Bool</code> that returns <code>True</code> if and only if the automaton accepts the string (assume the string contains valid symbols for the automaton).</p></li>
+<li><p>Then write a function <code>language :: Automaton -&gt; [String]</code>, which takes an automaton, and returns a (possibly infinite) list of strings which are accepted by the input automaton. These strings must appear in the following order:</p>
+<ul>
+<li>For all <span class="math"><em>n</em></span>, all accepted strings of length <span class="math"><em>n</em></span> must appear before all accepted strings of length <span class="math"><em>n</em> + 1</span>.</li>
+<li>For all <span class="math"><em>n</em></span>, all accepted strings of length <span class="math"><em>n</em></span> must appear in alphabetical order.</li>
+</ul>
+<p>Don't worry about distinguishing between finite and infinite languages just yet - see the next section.</p></li>
+</ol>
+<h2 id="finiteness">Finiteness</h2>
+<p>One interesting thing about our computation on finite automata so far is that we haven't really distinguished between automata recognizing finite vs. infinite languages. For example, suppose we had the following simple DFA:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">finite <span class="fu">=</span> <span class="dt">Automaton</span> [<span class="dv">0</span>,<span class="dv">1</span>] [<span class="ch">'a'</span>] [(<span class="dv">0</span>,<span class="ch">'a'</span>,<span class="dv">1</span>)] <span class="dv">0</span> [<span class="dv">1</span>]</code></pre>
+<p>This only accepts the string <code>"a"</code>, and rejects all other strings. However, it is likely that if you implemented <code>language</code> naively, you'll get an infinite loop if you try to <em>evaluate</em> <code>language finite</code>, or check whether a string other than <code>"a"</code> is accepted by <code>finite</code>.</p>
+<p>Let's address this problem.</p>
+<h3 id="useless-states">Useless states</h3>
+<p>A state <span class="math"><em>q</em></span> in an automaton with <span class="math"><em>n</em></span> states is <strong>useful</strong> if there exists a string of symbols of <strong>length at most <span class="math"><em>n</em></span></strong> that can be read to transition from <span class="math"><em>q</em></span> to a final state. Otherwise, the state <span class="math"><em>q</em></span> is <em>useless</em>. (Note that every final state is useful.)</p>
+<ol start="7" style="list-style-type: decimal">
+<li><p>Write a function <code>removeUseless :: Automaton -&gt; Automaton</code> that takes an automaton and returns a new one, which is the same as the input, except all of the useless states have been removed. Note that the useless states should be removed from both the set of states and the set of transitions.</p>
+<p>You may assume that the start state is always useful.</p>
+<p>Note: of course, removing useless states does not affect the <em>language</em> that an automaton accepts.</p>
+<p>The order of the remaining states and transitions must not be changed!</p></li>
+</ol>
+<h3 id="identifying-finiteness">Identifying finiteness</h3>
+<p>Now we can use this property of finite automata with no useless states: a finite automaton <span class="math"><em>A</em></span> with <span class="math"><em>n</em></span> states, and no useless states, accepts a finite language if and only if <strong>no state is reached when reading a string of length n + 1</strong> (starting at the start state).</p>
+<ol start="8" style="list-style-type: decimal">
+<li><p>Write a function <code>isFiniteLanguage :: Automaton -&gt; Bool</code> that returns <code>True</code> if and only if the input automaton accepts a finite language. Note that you may <strong>not</strong> assume that the input automaton has no useless states.</p></li>
+<li><p>Last but not least, write a function <code>language' :: Automaton -&gt; [String]</code> that returns the language accepted by an automaton (same as <code>language</code>), except that if the corresponding language is finite, <code>language'</code> is guaranteed to evaluate to a <em>finite</em> list.</p></li>
+</ol>
+<h2 id="epsilon-transitions">Epsilon-Transitions</h2>
+<p>Recall that an <strong>epsilon-transition</strong> (<span class="math"><em>ε</em></span>-transition) is a transition in an automaton that can be made at any time, without reading in a letter. This is another instance of non-determinism; if the current state is one with an <span class="math"><em>ε</em></span>-transition leading out of it, the automaton can <em>choose</em> whether or not to use it before reading in the next letter of the string.</p>
+<p>For example, the following NFA accepts the string "0"; it first takes the transition from <span class="math"><em>q</em><sub>0</sub></span> to <span class="math"><em>q</em><sub>1</sub></span>, then reads the 0 to go to <span class="math"><em>q</em><sub>2</sub></span>, then takes another transition from <span class="math"><em>q</em><sub>2</sub></span> to <span class="math"><em>q</em><sub>3</sub></span>, ending at a final state.</p>
+<p><img src="./epsilon.jpg" alt="DFA"></p>
+<p>To add support for <span class="math"><em>ε</em></span>-transitions to our program, we must be able to handle this type of transition happening at any time, independent of "reading the next letter in the string." Luckily, a very simple idea is all we need!</p>
+<h3 id="epsilon-closures">Epsilon Closures</h3>
+<p>For a given set of states <span class="math"><em>S</em></span> in an NFA, its <strong>epsilon closure</strong> is the set of all states reachable from the states in <span class="math"><em>S</em></span> using only <span class="math"><em>ε</em></span>-transitions. For example, in the NFA above, the epsilon closure of <span class="math">{<em>q</em><sub>0</sub>}</span> is <span class="math">{<em>q</em><sub>0</sub>, <em>q</em><sub>1</sub>, <em>q</em><sub>4</sub>}</span>, and the epsilon closure of <span class="math">{<em>q</em><sub>2</sub>, <em>q</em><sub>4</sub>}</span> is <span class="math">{<em>q</em><sub>2</sub>, <em>q</em><sub>3</sub>, <em>q</em><sub>4</sub>}</span>.</p>
+<p>Even though this example doesn't show it, more than one <span class="math"><em>ε</em></span>-transition can be taken when computing the epsilon closure. For example, if we replaced the transtion from <span class="math"><em>q</em><sub>1</sub></span> to <span class="math"><em>q</em><sub>2</sub></span> with an <span class="math"><em>ε</em></span>-transition, the epsilon closure of <span class="math">{<em>q</em><sub>0</sub>}</span> would be <span class="math">{<em>q</em><sub>0</sub>, <em>q</em><sub>1</sub>, <em>q</em><sub>2</sub>, <em>q</em><sub>3</sub>, <em>q</em><sub>4</sub>}</span>.</p>
+<p>Also note that for an automaton with no <span class="math"><em>ε</em></span>-transitions, the epsilon closure of a set of states is just that set of states.</p>
+<p>For this question and this question only, a <code>Transition</code> can have the form <code>(x,' ',y)</code>, where the space character represents an <span class="math"><em>ε</em></span>.</p>
+<ol start="10" style="list-style-type: decimal">
+<li><p>Implement the function <code>epsilonClosure :: Automaton -&gt; [State] -&gt; [State]</code>, which takes an automaton and a set of states (no duplicates), and returns the epsilon closure of the set of states in that automaton.</p>
+<p>The output set of states must be in <strong>ascending order</strong>. Of course, there shouldn't be duplicates.</p>
+<p>Note: this is a trickier question, which is why I put it at the end. The simlpest algorithm involves explicit recursion, just be careful not to get into an infinite recursion situation.</p></li>
+</ol>
+<h3 id="wrap-up-optional">Wrap-up (optional)</h3>
+<p>Believe it or not, now that you have <code>epsilonClosure</code>, you can simply use this function in all of your other functions from this assignment, and they should all work with automata containing <span class="math"><em>ε</em></span>-transitions!</p>
+<p>While we won't be testing this at all, it might be fun to do if you have time; and since <code>epsilonClosure</code> should act as the identity function when there are no <span class="math"><em>ε</em></span>-transitions, even if you modify your original functions, they'll be "backwards-compatible" with our tests. Yay!</p>
+    </div>
+</div>
+  <footer>
+    <a href="http://web.cs.toronto.edu/"><img class="logo" src="./csfaculty.jpg"></a>
+    <h5>
+      <a href="http://www.cs.toronto.edu/~liudavid/">David Liu</a> (liudavid at cs dot toronto dot edu) <br>
+      Come find me in BA4260<br>
+      Site design by Deyu Wang (dyw999 at gmail dot com)
+    </h5>
+  </footer>
+  <!--scripts-->
+  <script src=".main.js"></script>
+
+
+<span id="buffer-extension-hover-button" style="display: none; position: absolute; z-index: 8675309; width: 100px; height: 25px; opacity: 0.9; cursor: pointer; top: 668.937530517578px; left: 582px; background-image: url(chrome-extension://noojglkidnpfjbincgijbaiedldjfbhh/data/shared/img/buffer-hover-icon@2x.png); background-size: 100px 25px;"></span></body></html>
